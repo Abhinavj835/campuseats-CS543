@@ -1,0 +1,18 @@
+Notice the PATTERN: User Service and Catalogue Service are called 
+by MULTIPLE other services (User Service gets 2 incoming arrows, 
+Catalogue Service gets 2 incoming arrows) — but they never call 
+anyone else back.
+
+This makes sense: "who is this user" and "what is this food item" 
+are FOUNDATIONAL facts that many other services need to check 
+against, but User/Catalogue don't need to know about orders, carts, 
+or reviews to do their own job.
+
+This is a normal, healthy pattern in service design — a few 
+"foundational" services get called often, while more 
+"business-process" services (Order, Cart, Review) call outward 
+to gather what they need before doing their own job.
+
+NONE of the arrows go the other direction (e.g. User Service never 
+calls Order Service) — this also makes sense: User Service's job 
+(managing accounts) doesn't depend on orders existing at all.

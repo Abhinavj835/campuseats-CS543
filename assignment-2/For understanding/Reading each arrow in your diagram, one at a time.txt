@@ -1,0 +1,27 @@
+1. Order Service → User Service : validateCustomer
+   WHY: To place an order, Order Service must confirm the customer 
+   placing it is a real, registered user. But Order Service doesn't 
+   store user accounts — User Service does. So it CALLS User 
+   Service's validateCustomer operation.
+
+2. Order Service → Cart Service : getCartItems
+   WHY: An order is built FROM whatever is in the customer's cart. 
+   Order Service doesn't store cart contents — Cart Service does. 
+   So it CALLS getCartItems to fetch what's in the cart before 
+   creating the order.
+
+3. Cart Service → Catalogue Service : checkItemAvailability
+   WHY: When something is added to (or sits in) the cart, Cart 
+   Service needs to know if that food item still exists / is in 
+   stock. It doesn't store food details itself — Catalogue Service 
+   does. So it CALLS checkItemAvailability.
+
+4. Review Service → Catalogue Service : checkItemExists
+   WHY: Before accepting a review for a food item, Review Service 
+   must confirm that food item is real. It doesn't own food data — 
+   Catalogue Service does. So it CALLS checkItemExists.
+
+5. Review Service → User Service : validateCustomer
+   WHY: Before accepting a review, Review Service also needs to 
+   confirm the reviewer is a real registered user — same reasoning 
+   as arrow 1, just from a different caller.
