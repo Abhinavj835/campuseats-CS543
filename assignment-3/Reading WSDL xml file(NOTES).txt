@@ -1,0 +1,122 @@
+##What is XML?
+
+XML = eXtensible Markup Language
+It's a way to structure data using TAGS, similar to HTML but for 
+data instead of web pages.
+
+Basic rule: every tag that OPENS must CLOSE.
+<name>Abhinav</name>
+   ^opening tag    ^closing tag (note the "/")
+
+Tags can be NESTED inside each other (like folders inside folders):
+<person>
+  <name>Abhinav</name>
+  <age>20</age>
+</person>
+
+This says: "a person has a name (Abhinav) and an age (20)"
+
+
+##Reading the types block you just wrote
+
+<types>                              → "everything inside here 
+                                          defines data shapes"
+  <xsd:schema ...>                    → "using XML Schema rules 
+                                          to define these shapes"
+  
+    <xsd:element name="ChargeRequest">   → "I'm defining a NEW 
+                                             data shape called 
+                                             ChargeRequest"
+      <xsd:complexType>                   → "this shape has 
+                                              MULTIPLE fields 
+                                              inside it"
+        <xsd:sequence>                     → "the fields must 
+                                                appear in THIS 
+                                                order"
+          <xsd:element name="cardNumber" type="xsd:string"/>
+                    ↑ field name              ↑ field's data type 
+                                                 (text)
+          <xsd:element name="amount" type="xsd:decimal"/>
+                    ↑ this one is a DECIMAL number (like 499.99)
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:element>
+
+WHAT THIS CREATES: a blueprint saying "a ChargeRequest is a bundle 
+containing: cardNumber (text), amount (decimal number), currency 
+(text), orderId (text)" — nothing is actually "running" yet, this 
+is just a DEFINITION, like defining a form's fields before anyone 
+fills it out.
+
+Same pattern repeats for ChargeResponse — it's a blueprint for 
+"transactionId (text) + status (text)".
+
+
+
+
+
+<message name="ChargeRequestMessage">
+  → "I'm creating a message named ChargeRequestMessage"
+
+  <part name="parameters" element="tns:ChargeRequest"/>
+  → "this message's content IS the ChargeRequest shape we 
+     defined earlier" (tns: just means "the type defined in 
+     THIS document" — a technical XML naming convention, don't 
+     worry about memorizing why, just know tns: refers back to 
+     your own types)
+
+Same pattern for ChargeResponseMessage, using ChargeResponse.
+
+
+
+
+<portType name="PaymentGatewayPortType">
+  → "I'm defining a group of operations called PaymentGatewayPortType"
+
+  <operation name="charge">
+    → "one operation in this group is called 'charge'"
+
+    <input message="tns:ChargeRequestMessage"/>
+    → "charge RECEIVES a ChargeRequestMessage"
+
+    <output message="tns:ChargeResponseMessage"/>
+    → "charge RETURNS a ChargeResponseMessage"
+  </operation>
+</portType>
+
+
+
+
+<binding name="PaymentGatewaySoapBinding" type="tns:PaymentGatewayPortType">
+  → "I'm describing HOW PaymentGatewayPortType is transmitted"
+
+  <soap:binding transport="...soap/http" style="document"/>
+  → "it travels as SOAP over HTTP" (this exact URL is just a 
+     standard fixed value — always the same, not something you 
+     make up)
+
+  <operation name="charge">
+    <soap:operation soapAction="http://partner.example.com/payment/charge"/>
+    → "when calling charge, the HTTP request must include a 
+       SOAPAction header with THIS value" — this is what Task 4 
+       will ask you to show in the actual HTTP request
+
+    <soap:body use="literal"/>
+    → "the message body is sent literally, matching the XML shape 
+       we defined" (a fixed technical setting, don't worry about 
+       alternatives)
+
+
+
+
+<service name="PaymentGatewayService">
+  → "this is the actual service being offered"
+
+  <port name="PaymentGatewayPort" binding="tns:PaymentGatewaySoapBinding">
+    → "this port uses the binding rules we defined earlier 
+       (SOAP over HTTP)"
+
+    <soap:address location="https://api.partnerpay.com/soap/PaymentGateway"/>
+    → "and here's the REAL URL to send requests to"
+    → This is a made-up but realistic-looking URL — that's fine, 
+      the assignment says "real-looking," not an actual live URL

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="PaymentGatewayService"
+    targetNamespace="http://partner.example.com/payment"
+    xmlns:tns="http://partner.example.com/payment"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <types>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:element name="ChargeRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="cardNumber" type="xsd:string"/>
+            <xsd:element name="amount" type="xsd:decimal"/>
+            <xsd:element name="currency" type="xsd:string"/>
+            <xsd:element name="orderId" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="ChargeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="transactionId" type="xsd:string"/>
+            <xsd:element name="status" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </types>
+
+  <message name="ChargeRequestMessage">
+    <part name="parameters" element="tns:ChargeRequest"/>
+  </message>
+
+  <message name="ChargeResponseMessage">
+    <part name="parameters" element="tns:ChargeResponse"/>
+  </message>
+
+  <portType name="PaymentGatewayPortType">
+    <operation name="charge">
+      <input message="tns:ChargeRequestMessage"/>
+      <output message="tns:ChargeResponseMessage"/>
+    </operation>
+  </portType>
+
+  <binding name="PaymentGatewaySoapBinding" type="tns:PaymentGatewayPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <operation name="charge">
+      <soap:operation soapAction="http://partner.example.com/payment/charge"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+
+  <service name="PaymentGatewayService">
+    <port name="PaymentGatewayPort" binding="tns:PaymentGatewaySoapBinding">
+      <soap:address location="https://api.partnerpay.com/soap/PaymentGateway"/>
+    </port>
+  </service>
+
+</definitions>

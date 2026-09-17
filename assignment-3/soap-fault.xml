@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:pay="http://partner.example.com/payment">
+
+  <soap:Body>
+    <soap:Fault>
+      <faultcode>soap:Client</faultcode>
+      <faultstring>Card declined by issuing bank</faultstring>
+      <detail>
+        <pay:ChargeError>
+          <pay:errorCode>card_declined</pay:errorCode>
+          <pay:orderId>ORD10023</pay:orderId>
+        </pay:ChargeError>
+      </detail>
+    </soap:Fault>
+  </soap:Body>
+
+</soap:Envelope>
